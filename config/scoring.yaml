@@ -1,0 +1,30 @@
+weights:
+  coverage: 0.4     # C
+  velocity: 0.3     # V
+  tier: 0.3         # T
+half_life_hours:
+  Sports: 6
+  Technology: 18
+  Geopolitics: 24
+  Economics: 36
+velocity_min_publishers: 3      # V = 0 if P < this
+cluster_threshold: 0.75         # cosine similarity to join an event
+cluster_window_hours: 48
+breaking:
+  max_age_hours: 2
+  velocity_percentile: 95       # top 5% of V within the topic
+  top_n: 3
+rerank:
+  top_n: 10
+  max_per_publisher: 2
+  max_per_topic_home: 3
+clickbait_all_flagged_multiplier: 0.5
+schedule_minutes: 15
+gdelt:
+  enabled: true
+  timespan: 2h
+  max_records: 250
+stories:
+  threshold: 0.65          # event-centroid similarity that links two events into one story
+  min_member_sim: 0.5      # members below this similarity to the story centroid are dropped (stops chaining)
+  min_events: 6            # only groups of MORE than 5 events become a story

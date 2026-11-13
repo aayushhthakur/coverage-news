@@ -1,0 +1,39 @@
+# Topic / subtopic descriptions. Articles are labelled by cosine similarity
+# between their embedding and the embedding of each description.
+topics:
+  Geopolitics:
+    description: International news, world politics, governments, presidents, prime ministers, wars, diplomacy, sanctions, protests, courts and national security.
+    subtopics:
+      Conflict: War, military strikes, armed conflict, ceasefire talks, troops, missiles, drones, attacks and casualties in Ukraine, Russia, Gaza, Israel, Iran, Sudan.
+      Diplomacy: Summits, treaties, foreign ministers, peace talks, sanctions, alliances, NATO, the UN, the EU and negotiations between nations.
+      Elections: National elections, voting, campaigns, candidates, polls, presidents, prime ministers, parliaments and political parties.
+      Migration: Refugees, asylum seekers, border crossings, deportations, migrants and humanitarian crises.
+  Sports:
+    description: Sport news, matches, games, tournaments, athletes, players, coaches, teams, leagues, scores and results, including NFL, NBA, college football, baseball and golf.
+    subtopics:
+      Cricket: Cricket matches, Test series, ODI and T20 games, IPL, batting, bowling, wickets, runs and India, England, Australia cricket teams.
+      Football: Association football and soccer, Premier League, Champions League, La Liga, goals, managers sacked or appointed, Manchester United, Arsenal, Liverpool, Real Madrid, transfers.
+      Tennis: Tennis tournaments, Grand Slams, Wimbledon, US Open, Australian Open, ATP and WTA players, Djokovic, Alcaraz, Sinner, sets and matches.
+      Boxing: Boxing bouts, heavyweight title fights, knockouts, boxers like Fury and Usyk, promoters, undercards and world championship belts.
+  Economics:
+    description: Business and economic news, markets, companies, central banks, inflation, prices, taxes, budgets, trade, jobs and the cost of living.
+    subtopics:
+      Markets: Stock markets, shares, Wall Street, bonds, indices, investors, oil and gold prices, cryptocurrency and currency moves.
+      Monetary Policy: Central banks, interest rates, the Federal Reserve, ECB, Bank of England, RBI, inflation data and rate decisions.
+      Trade: Tariffs, exports, imports, trade deals, supply chains, customs and trade wars.
+      Corporate: Company earnings, quarterly results, profits, mergers, acquisitions, layoffs, IPOs and chief executives.
+  Technology:
+    description: Technology news, tech companies, software, apps, gadgets, phones, computers, the internet, artificial intelligence, chips, science and product reviews.
+    subtopics:
+      AI: Artificial intelligence, large language models, chatbots, AI agents, OpenAI, Anthropic, Nvidia AI chips, machine learning and AI regulation.
+      Big Tech: Apple, Google, Microsoft, Amazon, Meta, Nvidia, smartphones, iPhone, Android, product launches and antitrust cases.
+      Cybersecurity: Hacks, data breaches, ransomware, vulnerabilities, malware, cybercrime, spyware and cyber attacks.
+      Space: Space launches, rockets, NASA, SpaceX, satellites, the Moon, Mars and astronomy.
+
+# Labelling thresholds (cosine similarity)
+topic_threshold: 0.22        # assign a topic at or above this
+second_topic_margin: 0.04    # a 2nd topic must be within this of the best
+max_topics: 2
+publisher_prior: 0.08        # added to topics the publisher lists in feeds.yaml
+subtopic_threshold: 0.30     # best subtopic in each assigned topic must reach this
+subtopic_margin: 0.03        # further subtopics within this of the best are also assigned

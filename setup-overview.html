@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Coverage Setup</title>
+<style>
+  :root {
+    --bg: #f6f5f2; --surface: #ffffff; --surface-2: #efeee9; --ink: #17181a; --ink-2: #4a4d52; --ink-3: #6b6f75;
+    --line: #e2e0da; --accent: #1d5bd8; --accent-soft: #e6eefc; --ok: #1f7a4d; --ok-soft: #e3f3ea;
+    --warn: #a35a00; --warn-soft: #fbefdc; --bad: #c8261d; --bad-soft: #fbe5e3; --story: #6b3fc4; --story-soft: #efe8fb;
+    --code-bg: #f0efea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121314; --surface: #1b1c1e; --surface-2: #242528; --ink: #eeeeec; --ink-2: #b9bcc1; --ink-3: #9a9ea5;
+      --line: #2d2f33; --accent: #7aa5ff; --accent-soft: #1b2742; --ok: #5fd39a; --ok-soft: #17302a;
+      --warn: #f0b35c; --warn-soft: #33281a; --bad: #ff6b5f; --bad-soft: #3a1f1d; --story: #b79bff; --story-soft: #2a2140;
+      --code-bg: #232427;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 16px 64px; }
+  header h1 { font-size: 30px; line-height: 1.15; margin: 0 0 6px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--ink-2); }
+  .meta { margin-top: 10px; font-size: 14px; color: var(--ink-3); }
+  h2 { font-size: 21px; margin: 44px 0 12px; letter-spacing: -0.005em; }
+  h3 { font-size: 16px; margin: 20px 0 8px; }
+  p { margin: 8px 0; }
+  a { color: var(--accent); }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 5px; }
+  pre { background: var(--code-bg); padding: 12px 14px; border-radius: 10px; overflow-x: auto; margin: 6px 0 12px; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  .muted { color: var(--ink-3); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 22px; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+  .stat b { display: block; font-size: 24px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: 14px; color: var(--ink-3); }
+  .stat.warn { border-color: color-mix(in srgb, var(--warn) 40%, var(--line)); background: var(--warn-soft); }
+  .stat.warn b { color: var(--warn); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+  .flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; counter-reset: step; }
+  .flow li { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 14px 12px 50px; counter-increment: step; }
+  .flow li::before { content: counter(step); position: absolute; left: 14px; top: 14px; width: 24px; height: 24px; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 13px; display: grid; place-items: center; }
+  .flow b { display: block; }
+  .flow p { font-size: 14px; color: var(--ink-2); margin: 4px 0 0; }
+  .flow .file { font-size: 13px; color: var(--ink-3); margin-top: 6px; font-family: ui-monospace, Menlo, monospace; }
+  .flow li.new { border-color: color-mix(in srgb, var(--story) 45%, var(--line)); }
+  .flow li.new::before { background: var(--story-soft); color: var(--story); }
+  .formula { font-size: 18px; font-family: ui-monospace, Menlo, monospace; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 14px; padding: 14px 16px; overflow-x: auto; white-space: nowrap; }
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-3); font-weight: 600; background: var(--surface-2); }
+  tr:last-child td { border-bottom: 0; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 99px; white-space: nowrap; }
+  .tag.story { background: var(--story-soft); color: var(--story); }
+  .tag.ok { background: var(--ok-soft); color: var(--ok); }
+  .tag.warn { background: var(--warn-soft); color: var(--warn); }
+  .tag.bad { background: var(--bad-soft); color: var(--bad); }
+  .bar { height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; min-width: 60px; margin-top: 6px; }
+  .bar i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+  ul.plain { margin: 6px 0; padding-left: 20px; }
+  ul.plain li { margin: 4px 0; }
+  .note { border-left: 3px solid var(--warn); background: var(--warn-soft); padding: 10px 14px; border-radius: 0 10px 10px 0; margin: 12px 0; }
+  .note.info { border-color: var(--accent); background: var(--accent-soft); }
+  .tree { font-family: ui-monospace, Menlo, monospace; font-size: 14px; line-height: 1.6; white-space: pre; overflow-x: auto; }
+  footer { margin-top: 48px; font-size: 14px; color: var(--ink-3); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Coverage: prototype setup</h1>
+  <p>A phone-first news app that ranks <b>events</b> (clusters of articles about the same thing) by how widely they are covered, and shows why each sits where it does.</p>
+  <p class="meta">Snapshot taken 13 Nov 2026, 07:07 UTC, from the running API. All 5 build steps are complete.</p>
+  <div class="stats">
+    <div class="stat"><b>39</b><span>RSS publishers</span></div>
+    <div class="stat"><b>960</b><span>articles (48h window)</span></div>
+    <div class="stat"><b>806</b><span>events</span></div>
+    <div class="stat"><b>6</b><span>stories (6+ events)</span></div>
+    <div class="stat"><b>63</b><span>backend tests passing</span></div>
+    <div class="stat warn"><b>GDELT</b><span>failing (HTTP 429 or empty reply)</span></div>
+  </div>
+</header>
+
+<h2>Run it</h2>
+<p>Run every command from the project's top folder, the one that contains <code>backend/</code>, <code>config/</code> and <code>frontend/</code>.</p>
+<div class="grid2">
+  <div class="card">
+    <h3 style="margin-top:0">First-time setup</h3>
+<pre><code>python3 -m venv .venv
+.venv/bin/pip install -r backend/requirements.txt
+npm --prefix frontend install</code></pre>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">API · port 8000</h3>
+<pre><code>.venv/bin/uvicorn app.main:app --app-dir backend --port 8000</code></pre>
+    <p class="muted" style="font-size:14px">Runs the pipeline at startup, then every 15 minutes.</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Web app · port 5180</h3>
+<pre><code>npm --prefix frontend run dev -- --port 5180</code></pre>
+    <p class="muted" style="font-size:14px">Proxies <code>/api/*</code> to :8000. Open on a phone via your computer's LAN IP.</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Installable PWA · port 5181</h3>
+<pre><code>npm --prefix frontend run build
+npm --prefix frontend run preview -- --port 5181</code></pre>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Tests</h3>
+<pre><code>cd backend &amp;&amp; ../.venv/bin/python -m pytest -q</code></pre>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Pipeline and evaluation</h3>
+<pre><code>cd backend &amp;&amp; ../.venv/bin/python -m app.pipeline --report
+.venv/bin/python scripts/eval.py</code></pre>
+  </div>
+</div>
+
+<h2>Pipeline (every 15 minutes)</h2>
+<ol class="flow">
+  <li><b>Ingest</b><p>39 RSS feeds plus one GDELT DOC 2.0 query. Every raw response is saved as JSON.</p><div class="file">app/ingest.py → data/raw/YYYY-MM-DD/</div></li>
+  <li><b>Normalise</b><p>Title, summary of at most 280 characters (never full text), publisher, time, URL. Drops duplicates by URL and by normalised-title hash.</p><div class="file">app/normalise.py</div></li>
+  <li><b>Classify</b><p>Multi-label topic and subtopic by embedding similarity to the taxonomy descriptions, plus a small prior for the publisher's own topics.</p><div class="file">app/classify.py · MiniLM-L6-v2</div></li>
+  <li><b>Cluster</b><p>Joins the most similar open event if similarity is at least 0.75, within 48 hours. Event IDs stay the same between runs.</p><div class="file">app/cluster.py</div></li>
+  <li class="new"><b>Group stories</b><p>Events whose average vectors are at least 0.65 similar are linked. Groups of 6 or more become one story with sub-events.</p><div class="file">app/stories.py</div></li>
+  <li><b>Snapshot + score</b><p>Stores each event's publisher count every run, then computes C, V, T and S per topic.</p><div class="file">app/scoring.py</div></li>
+  <li><b>Representative</b><p>The article from the highest-tier publisher whose headline isn't clickbait, earliest first.</p><div class="file">app/rank.py</div></li>
+  <li><b>Re-rank</b><p>At request time: one entry per event, at most 2 articles per publisher, breaking boost, at most 3 per topic on Home.</p><div class="file">app/rank.py · app/main.py</div></li>
+</ol>
+
+<h2>Scoring</h2>
+<div class="formula">S = (0.4·C + 0.3·V + 0.3·T) × 2<sup>−a/h</sup></div>
+<div class="tablewrap" style="margin-top:10px">
+<table>
+  <thead><tr><th>Term</th><th>Definition</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td><b>C</b></td><td>log(1 + P) / log(1 + N)</td><td>P = distinct publishers in the event, N = 39 publishers in feeds.yaml</td></tr>
+    <tr><td><b>V</b></td><td>publishers added in the last hour / P</td><td>0 if P &lt; 3. "An hour ago" comes from snapshots, or from article times on a fresh DB.</td></tr>
+    <tr><td><b>T</b></td><td>Tier 1 publishers covering it / Tier 1 list size</td><td>Tier 1 lists come from the <code>tier</code> field in feeds.yaml, per topic</td></tr>
+    <tr><td><b>a, h</b></td><td>hours since latest article; topic half-life</td><td>Sports 6h · Technology 18h · Geopolitics 24h · Economics 36h</td></tr>
+    <tr><td><b>×0.5</b></td><td>clickbait demotion</td><td>Applied if every headline in the event is flagged (question bait, withheld subject, punctuation, capitals)</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="muted">Publishers are counted, never articles. Stories are scored over all their sub-events' publishers combined. Every weight, half-life and threshold is in <code>config/scoring.yaml</code>.</p>
+
+<h3>Re-ranking rules</h3>
+<ul class="plain">
+  <li><b>One entry per event</b>, and a story replaces its member events.</li>
+  <li><b>At most 2 representative articles per publisher</b> in any top 10. The event switches to its next-best publisher before it is dropped.</li>
+  <li><b>Breaking boost</b>: under 2 hours old, with V above 0 and in the topic's top 5%. It moves into the topic's top 3 with a "Breaking" tag.</li>
+  <li><b>Home interleave</b>: no topic takes more than 3 of the top 10.</li>
+</ul>
+
+<h2>Live snapshot: Home top 10</h2>
+<div class="tablewrap">
+<table>
+  <thead><tr><th class="num">#</th><th>Headline</th><th>Topic</th><th class="num">P</th><th class="num">C</th><th class="num">V</th><th class="num">T</th><th class="num">Age</th><th class="num">S</th></tr></thead>
+  <tbody>
+    <tr><td class="num">1</td><td><span class="tag story">Story · Jensen Huang · 35</span><br>Jensen Huang Resigns as Nvidia CEO <span class="muted">· Wired</span></td><td>Tech</td><td class="num">21</td><td class="num">0.84</td><td class="num">0.00</td><td class="num">1.00</td><td class="num">0.3h</td><td class="num"><b>0.628</b><div class="bar"><i style="width:62.8%"></i></div></td></tr>
+    <tr><td class="num">2</td><td><span class="tag story">Story · Ukraine · 10</span><br>Seeking to Broaden Ukraine Talks, U.S. Urges Russia to Include Europe <span class="muted">· New York Times</span></td><td>Geopolitics</td><td class="num">11</td><td class="num">0.67</td><td class="num">0.00</td><td class="num">1.00</td><td class="num">1.2h</td><td class="num"><b>0.550</b><div class="bar"><i style="width:55%"></i></div></td></tr>
+    <tr><td class="num">3</td><td>Cummins dismisses Khawaja's claims as 'utter nonsense' <span class="muted">· Sky Sports</span></td><td>Sports</td><td class="num">6</td><td class="num">0.53</td><td class="num">0.33</td><td class="num">0.80</td><td class="num">0.4h</td><td class="num"><b>0.524</b><div class="bar"><i style="width:52.4%"></i></div></td></tr>
+    <tr><td class="num">4</td><td><span class="tag story">Story · Microsoft · 8</span><br>Microsoft's Outlook email hit by new outage <span class="muted">· TechCrunch</span></td><td>Tech</td><td class="num">12</td><td class="num">0.70</td><td class="num">0.08</td><td class="num">0.60</td><td class="num">0.2h</td><td class="num"><b>0.479</b><div class="bar"><i style="width:47.9%"></i></div></td></tr>
+    <tr><td class="num">5</td><td><span class="tag story">Story · Pope · 8</span><br>Lots of Competition to Catholicism in Peru as Pope Returns for Visit <span class="muted">· New York Times</span></td><td>Geopolitics</td><td class="num">7</td><td class="num">0.56</td><td class="num">0.14</td><td class="num">0.38</td><td class="num">0.3h</td><td class="num"><b>0.378</b><div class="bar"><i style="width:37.8%"></i></div></td></tr>
+    <tr><td class="num">6</td><td>An Israeli strike on a Gaza hospital kills 6 people, including a doctor <span class="muted">· NPR</span></td><td>Geopolitics</td><td class="num">10</td><td class="num">0.65</td><td class="num">0.00</td><td class="num">0.63</td><td class="num">10.8h</td><td class="num"><b>0.328</b><div class="bar"><i style="width:32.8%"></i></div></td></tr>
+    <tr><td class="num">7</td><td><span class="tag story">Story · Giants · 16</span><br>4 things we learned from the Giants' 24-21 loss to the Commanders <span class="muted">· Yahoo Sports</span></td><td>Sports</td><td class="num">4</td><td class="num">0.44</td><td class="num">0.00</td><td class="num">0.20</td><td class="num">0.2h</td><td class="num"><b>0.229</b><div class="bar"><i style="width:22.9%"></i></div></td></tr>
+    <tr><td class="num">8</td><td>Kane makes history with record 126th England cap <span class="muted">· Sky Sports</span></td><td>Sports</td><td class="num">2</td><td class="num">0.30</td><td class="num">0.00</td><td class="num">0.40</td><td class="num">1.2h</td><td class="num"><b>0.207</b><div class="bar"><i style="width:20.7%"></i></div></td></tr>
+    <tr><td class="num">9</td><td>Instacart Promo Code: $15 Off | November 2026 <span class="muted">· Wired</span> <span class="tag warn">shopping post</span></td><td>Tech</td><td class="num">1</td><td class="num">0.19</td><td class="num">0.00</td><td class="num">0.20</td><td class="num">0.9h</td><td class="num"><b>0.131</b><div class="bar"><i style="width:13.1%"></i></div></td></tr>
+    <tr><td class="num">10</td><td>Nscale warns it needs more cash ahead of $35bn IPO <span class="muted">· Financial Times</span></td><td>Economics</td><td class="num">1</td><td class="num">0.19</td><td class="num">0.00</td><td class="num">0.17</td><td class="num">2.7h</td><td class="num"><b>0.119</b><div class="bar"><i style="width:11.9%"></i></div></td></tr>
+  </tbody>
+</table>
+</div>
+<p class="muted">No event qualifies as Breaking right now. Ranked events by primary topic: Sports 225, Geopolitics 194, Technology 169, Economics 41.</p>
+
+<h2>API</h2>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Endpoint</th><th>Returns</th></tr></thead>
+  <tbody>
+    <tr><td><code>GET /home</code></td><td>Top 10 across topics. Each card has headline, summary, publisher, url, first report time, sources, breaking flag and full score breakdown.</td></tr>
+    <tr><td><code>GET /topics/{topic}?subtopic=</code></td><td>Top 10 for a topic (<code>tech</code> works, any case) plus its subtopic list. Unknown topic or subtopic returns 404.</td></tr>
+    <tr><td><code>GET /events/{id}</code></td><td>Publishers grouped by tier (1/2/3/other), timeline of every report, score breakdown (C, V, T, age, decay, S).</td></tr>
+    <tr><td><code>GET /stories/{id}</code></td><td>The same for a story, plus its sub-events ordered by score.</td></tr>
+    <tr><td><code>GET /health</code></td><td>Last run time, running flag, article/event/story counts, failed feeds.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Mobile UI</h2>
+<div class="grid2">
+  <div class="card">
+    <h3 style="margin-top:0">Screens</h3>
+    <ul class="plain">
+      <li><b>Bottom tab bar</b>: Home, Geopolitics, Sports, Economics, Tech.</li>
+      <li><b>Topic screens</b>: a scrolling row of subtopic chips.</li>
+      <li><b>Event card</b>: 3-line headline, 2-line summary, publisher, time since first report, a sources badge, Breaking and Story tags.</li>
+      <li><b>"Why this is ranked here"</b>: a bottom sheet with four bars.</li>
+      <li><b>Event and story screen</b>: publishers by tier (each opens the article on the publisher's site in a new tab), a vertical timeline, and the story's angles.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Checked in the browser</h3>
+    <ul class="plain">
+      <li><span class="tag ok">pass</span> Every touch target is at least 44px (measured).</li>
+      <li><span class="tag ok">pass</span> Body text is at least 16px; small labels such as publisher and time are 14px.</li>
+      <li><span class="tag ok">pass</span> No sideways scrolling at 360px; safe-area insets are respected.</li>
+      <li><span class="tag ok">pass</span> Light and dark mode follow the system setting.</li>
+      <li><span class="tag ok">pass</span> Pull to refresh, skeleton, empty, error and 404 states.</li>
+      <li><span class="tag ok">pass</span> PWA: service worker active, manifest served, 5 icons load.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Configuration and secrets</h2>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>File</th><th>What it controls</th></tr></thead>
+  <tbody>
+    <tr><td><code>config/feeds.yaml</code></td><td>39 feeds: name (the publisher), url, topics, tier, and GDELT domains. Rebuild it with <code>scripts/build_feeds.py</code>.</td></tr>
+    <tr><td><code>config/taxonomy.yaml</code></td><td>4 topics × 4 subtopics with descriptions; labelling thresholds; publisher prior.</td></tr>
+    <tr><td><code>config/scoring.yaml</code></td><td>Weights, half-lives, cluster threshold (0.75) and window (48h), story grouping (0.65, 6+ events), breaking rule, re-rank caps, schedule (15 min), GDELT.</td></tr>
+    <tr><td><code>.env</code></td><td>Backend-only secrets, loaded at startup. <code>UNSPLASH_ACCESS_KEY</code> is <b>empty</b> and nothing uses it yet. Never committed (in <code>.gitignore</code>); <code>.env.example</code> lists the keys.</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="note info">Keep API keys in <code>.env</code>, not in a frontend <code>VITE_…</code> variable. Anything with a <code>VITE_</code> name is bundled into the JavaScript the browser downloads, so anyone using the app could read it.</div>
+
+<h2>Project layout</h2>
+<div class="card tree">.env                  backend secrets (UNSPLASH_ACCESS_KEY)
+README.md             setup, run commands, how it works
+setup-overview.html   this page
+config/               feeds.yaml · taxonomy.yaml · scoring.yaml
+backend/
+  app/                ingest · normalise · classify · cluster · stories · scoring · rank · main (API) · pipeline
+  tests/              63 tests: scoring, clickbait, each re-rank rule, API
+  requirements.txt
+frontend/
+  src/                App · Feed · EventCard · WhySheet · Detail · TabBar · States
+  public/             manifest.webmanifest · sw.js · icons/
+scripts/              build_feeds.py · eval.py
+data/                 news.db · raw/YYYY-MM-DD/*.json · eval/</div>
+
+<h2>Known limitations</h2>
+<ul class="plain">
+  <li><span class="tag bad">open</span> <b>GDELT</b> returns HTTP 429 (or an empty list) from this network. It is reported in <code>/health</code>, and the app runs on RSS alone.</li>
+  <li><span class="tag warn">open</span> <b>Shopping posts</b>: Wired's coupon and deal posts are not news events, but they are not clickbait by the spec's rules, so they can rank (#9 on Home now).</li>
+  <li><span class="tag warn">open</span> <b>Classification noise</b>: "trade deadline" is labelled Economics and a rugby TV listing is labelled Cricket. About 20% of articles match no topic.</li>
+  <li><span class="tag warn">open</span> <b>Economics is thin</b>: few feeds, so most Economics events have a single publisher.</li>
+  <li><span class="tag warn">note</span> <b>Velocity needs history</b>: V is mostly 0 until snapshots an hour apart have built up.</li>
+  <li><span class="tag warn">note</span> <b>Story labels</b> are the most frequent name in the headlines ("Giants"), not a written title.</li>
+</ul>
+
+<footer>Generated from the live prototype on 13 Nov 2026. The numbers are a snapshot; for current values see <code>/health</code> and <code>/home</code> on the API.</footer>
+</div>
+</body>
+</html>

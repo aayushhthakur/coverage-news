@@ -1,0 +1,35 @@
+# Card images from Unsplash (needs UNSPLASH_ACCESS_KEY in .env; without it, cards show no image).
+#
+# Images are illustrative, not news photos: each card gets a photo for its subtopic
+# (or topic), drawn from a cached pool per query. Searching Unsplash with headline
+# words returns unrelated stock people/places, which would mislead next to news.
+unsplash:
+  enabled: true
+  per_page: 20                 # photos fetched per pool query
+  pool_ttl_hours: 24           # refresh each pool at most once a day
+  max_requests_per_run: 10     # demo apps get 50 requests/hour; the pipeline runs 4x/hour
+  min_remaining: 5             # stop early if Unsplash reports fewer requests left than this
+  utm_source: coverage_prototype   # required on attribution links (Unsplash guidelines)
+
+# Query per subtopic, falling back to the topic. Kept neutral on purpose.
+queries:
+  Geopolitics: world map
+  Conflict: barbed wire fence
+  Diplomacy: flags conference
+  Elections: ballot box
+  Migration: border fence
+  Sports: stadium lights
+  Cricket: cricket match
+  Football: football stadium
+  Tennis: tennis court
+  Boxing: boxing ring
+  Economics: financial district
+  Markets: stock market chart
+  Monetary Policy: bank building columns
+  Trade: shipping containers port
+  Corporate: office building glass
+  Technology: circuit board
+  AI: neural network abstract
+  Big Tech: smartphone laptop desk
+  Cybersecurity: code screen dark
+  Space: rocket launch
