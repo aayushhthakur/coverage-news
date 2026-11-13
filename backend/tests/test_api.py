@@ -98,3 +98,12 @@ def test_health(client):
     assert h["last_run_at"] == "2026-11-13T12:00:00+00:00"
     assert h["failed_feeds"] == ["GDELT"]
     assert h["article_count"] == 19 and h["event_count"] == 8
+
+
+def test_detail_has_writeup_and_topic(client):
+    story = next(i for i in client.get("/home").json()["items"] if i["kind"] == "story")
+    d = client.get(f"/stories/{story['id']}").json()
+    assert d["topic"] == "Technology"
+    w = d["writeup"]
+    assert w["engine"] == "extractive" and w["sections"][0]["key"] == "what"
+    assert [s["publisher"] for s in w["sources"]][:1] and all("passages" in s for s in w["sources"])

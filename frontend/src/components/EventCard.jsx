@@ -2,13 +2,14 @@ import { timeAgo, sourcesLabel } from '../format'
 import { href } from '../router'
 import { ChevronIcon, LayersIcon } from './Icons'
 import { CardImage } from './Photo'
+import { topicClass } from '../topics'
 
 const TOPIC_SHORT = { Technology: 'Tech' }
 
 export default function EventCard({ item, showTopic, onWhy, eagerImage = false }) {
   const isStory = item.kind === 'story'
   return (
-    <article className="relative overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_1px_0_rgba(0,0,0,0.02)]">
+    <article className={`${topicClass(item.topic)} relative overflow-hidden rounded-2xl border border-line border-t-[3px] border-t-topic bg-surface shadow-[0_1px_0_rgba(0,0,0,0.02)]`}>
       {item.image && <CardImage image={item.image} eager={eagerImage} />}
       <div className="p-4">
         {(item.breaking || isStory || showTopic) && (
@@ -17,11 +18,11 @@ export default function EventCard({ item, showTopic, onWhy, eagerImage = false }
               <span className="rounded-full bg-breaking px-2 py-0.5 uppercase tracking-wide text-white dark:text-black">Breaking</span>
             )}
             {isStory && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-story/12 px-2 py-0.5 text-story">
-                <LayersIcon width={14} height={14} /> {item.label} · {item.sub_event_count} angles
+              <span className="inline-flex items-center gap-1 rounded-full bg-topic/12 px-2 py-0.5 text-topic">
+                <LayersIcon width={14} height={14} /> {item.label}
               </span>
             )}
-            {showTopic && <span className="text-ink-3">{TOPIC_SHORT[item.topic] ?? item.topic}</span>}
+            {showTopic && <span className="text-topic">{TOPIC_SHORT[item.topic] ?? item.topic}</span>}
           </div>
         )}
 
@@ -31,7 +32,7 @@ export default function EventCard({ item, showTopic, onWhy, eagerImage = false }
             {item.headline}
           </a>
         </h2>
-        {item.summary && <p className="mt-1.5 line-clamp-2 text-[16px] text-ink-2">{item.summary}</p>}
+        {item.summary && <p className="mt-1.5 text-[16px] leading-relaxed text-ink-2">{item.summary}</p>}
 
         <div className="mt-3 flex items-center justify-between gap-3">
           <p className="min-w-0 truncate text-[14px] text-ink-3">

@@ -15,6 +15,12 @@
   --story: #6b3fc4;
   --bar-track: #e6e4de;
   --skeleton: #e7e5df;
+  /* topic colours */
+  --geo: #c2570c;
+  --sports: #15803d;
+  --econ: #c81e1e;
+  --tech: #1d5bd8;
+  --topic: var(--accent);
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -31,6 +37,10 @@
     --story: #b79bff;
     --bar-track: #2c2e32;
     --skeleton: #26272a;
+    --geo: #ff9a52;
+    --sports: #4ade80;
+    --econ: #ff7070;
+    --tech: #7aa5ff;
   }
 }
 
@@ -48,7 +58,13 @@
   --color-story: var(--story);
   --color-bar-track: var(--bar-track);
   --color-skeleton: var(--skeleton);
+  --color-topic: var(--topic);
 }
+
+.t-geo { --topic: var(--geo); }
+.t-sports { --topic: var(--sports); }
+.t-econ { --topic: var(--econ); }
+.t-tech { --topic: var(--tech); }
 
 html {
   -webkit-text-size-adjust: 100%;

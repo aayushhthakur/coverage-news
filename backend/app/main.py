@@ -26,6 +26,7 @@ from . import db
 from .config import publishers, scoring, taxonomy
 from .images import image_for
 from .rank import Candidate, ranked
+from .writeup import article_for, summary_for
 
 log = logging.getLogger(__name__)
 TOPIC_ALIASES = {"tech": "Technology"}
@@ -107,7 +108,8 @@ def _breakdown(row) -> dict:
 def _card(conn, c: Candidate, rank: int) -> dict:
     a = conn.execute("SELECT title, summary, url, publisher FROM articles WHERE id=?",
                      (c.rep.article_id,)).fetchone()
-    summary = a["summary"] or next(
+    # ~60-90 words drawn from every angle; falls back to the representative's own summary
+    summary = summary_for(conn, c.kind, c.event_id, a["title"]) or a["summary"] or next(
         (r[0] for r in conn.execute(f"SELECT summary FROM articles WHERE {_member_where(c.kind)} "
                                     "AND summary != '' ORDER BY published_at", (c.event_id,))), "")
     first = conn.execute(f"SELECT MIN(published_at) FROM articles WHERE {_member_where(c.kind)}",
@@ -172,7 +174,10 @@ def _detail(conn, kind: str, item_id: int) -> dict:
         "kind": kind,
         "id": item_id,
         "headline": lead["title"],
-        "summary": lead["summary"] or next((a["summary"] for a in arts if a["summary"]), ""),
+        "summary": summary_for(conn, kind, item_id, lead["title"])
+        or lead["summary"] or next((a["summary"] for a in arts if a["summary"]), ""),
+        "topic": score["topic"] if score else None,
+        "writeup": article_for(conn, kind, item_id, lead["title"]),
         "first_reported_at": arts[0]["published_at"],
         "last_reported_at": arts[-1]["published_at"],
         "article_count": len(arts),

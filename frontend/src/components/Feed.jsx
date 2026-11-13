@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { listPath } from '../api'
 import { href } from '../router'
+import { topicClass } from '../topics'
 import { useFetch } from '../useFetch'
 import { usePullToRefresh } from '../usePullToRefresh'
 import EventCard, { CardSkeleton } from './EventCard'
@@ -27,10 +28,10 @@ export default function Feed({ topic, subtopic }) {
   const showSkeleton = loading && !data
 
   return (
-    <>
+    <div className={topicClass(topic)}>
       <header className="sticky top-0 z-20 border-b border-line bg-bg/95 backdrop-blur pt-safe">
         <div className="flex min-h-[52px] items-center justify-between px-safe">
-          <h1 className="text-[22px] font-bold tracking-tight">{title}</h1>
+          <h1 className={`text-[22px] font-bold tracking-tight ${topic ? 'text-topic' : ''}`}>{title}</h1>
           <button type="button" onClick={reload} aria-label="Refresh"
             className="-mr-2 inline-flex h-11 w-11 items-center justify-center rounded-full text-ink-2">
             <RefreshIcon width={22} height={22} className={loading && data ? 'animate-spin' : ''} />
@@ -76,7 +77,7 @@ export default function Feed({ topic, subtopic }) {
         )}
       </main>
       <WhySheet item={why} onClose={() => setWhy(null)} />
-    </>
+    </div>
   )
 }
 
@@ -98,7 +99,7 @@ function SubtopicChips({ topic, subtopic, subtopics }) {
                 href={href.topic(topic, s)}
                 aria-current={on ? 'page' : undefined}
                 className={`inline-flex min-h-[44px] items-center rounded-full border px-4 text-[15px] font-medium ${
-                  on ? 'border-ink bg-ink text-bg' : 'border-line bg-surface text-ink-2'}`}
+                  on ? 'border-topic bg-topic text-white dark:text-black' : 'border-line bg-surface text-ink-2'}`}
               >
                 {s ?? 'All'}
               </a>

@@ -1,4 +1,5 @@
 import { href } from '../router'
+import { topicClass } from '../topics'
 import { ChartIcon, ChipIcon, GlobeIcon, HomeIcon, TrophyIcon } from './Icons'
 
 const TABS = [
@@ -21,7 +22,7 @@ export default function TabBar({ active }) {
               <a
                 href={topic ? href.topic(topic) : href.home()}
                 aria-current={on ? 'page' : undefined}
-                className={`flex min-h-[56px] flex-col items-center justify-center gap-0.5 text-[12px] font-medium ${on ? 'text-accent' : 'text-ink-3'}`}
+                className={`${topicClass(topic)} flex min-h-[56px] flex-col items-center justify-center gap-0.5 text-[12px] font-medium ${on ? 'text-topic' : 'text-ink-3'}`}
               >
                 <tab.Icon width={24} height={24} strokeWidth={on ? 2.2 : 1.8} />
                 <span>{label}</span>

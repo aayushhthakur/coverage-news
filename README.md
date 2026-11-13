@@ -122,7 +122,8 @@ Every 15 minutes (`backend/app/pipeline.py`):
 
    Publishers are counted, never articles. If every headline in an event is flagged as clickbait, S × 0.5.
 7. **Representative article**: the highest-tier publisher whose headline isn't clickbait, earliest first. For a story, it comes from its best-scoring sub-event.
-8. **Re-rank** at request time (`backend/app/rank.py`): one entry per event; max 2 representative articles per publisher in a top 10 (switches to the event's next-best publisher before dropping it); breaking boost (under 2h old, V > 0 and in the topic's top 5%) lifts into the top 3 with a tag; home shows at most 3 per topic.
+8. **Write-up** (`backend/app/writeup.py`): each card gets a 60–90 word summary, and each event/story screen a write-up of up to ~1000 words in sections (What happened, Why, Where, Who, When, How it unfolded, What it means for those involved), followed by its sources ranked by how many passages were used. For now this is **extractive**: every passage is a sentence quoted from a publisher's feed summary and credited underneath, picked for the words most widely shared across publishers. Only the "When", "Where" and "Who" lead-ins are generated from metadata. A big story reaches ~1000 words; a small event only has a few hundred words of feed text to draw on. The response shape (`writeup.sections[].blocks[]`, `writeup.sources[]`) is what an LLM writer should return when one is added (`writeup.engine` in `config/scoring.yaml`).
+9. **Re-rank** at request time (`backend/app/rank.py`): one entry per event; max 2 representative articles per publisher in a top 10 (switches to the event's next-best publisher before dropping it); breaking boost (under 2h old, V > 0 and in the topic's top 5%) lifts into the top 3 with a tag; home shows at most 3 per topic.
 
 ## API
 
@@ -130,8 +131,8 @@ Every 15 minutes (`backend/app/pipeline.py`):
 |---|---|
 | `GET /home` | top 10 across topics |
 | `GET /topics/{topic}?subtopic=` | top 10 for a topic (`tech` works) or subtopic |
-| `GET /events/{id}` | publishers grouped by tier, report timeline, score breakdown |
-| `GET /stories/{id}` | same for a story, plus its sub-events |
+| `GET /events/{id}` | write-up, publishers grouped by tier, report timeline, score breakdown |
+| `GET /stories/{id}` | same for a story, plus its sub-events (not shown in the app) |
 | `GET /health` | last run, running flag, article/event/story counts, failed feeds |
 
 Every list item carries its `score` block (publishers, added in last hour, Tier 1 n/size, C, V, T, age, decay, S), which is what the "Why this is ranked here" sheet shows.
@@ -142,4 +143,5 @@ Every list item carries its `score` block (publishers, added in last hour, Tier 
 - **Velocity needs history**: V uses snapshots an hour apart. On a fresh database it falls back to article timestamps until enough runs have accumulated.
 - **Classification noise**: embedding similarity to short descriptions mislabels some items (e.g. "trade deadline" → Economics, a rugby listing → Cricket). About 20% of articles match no topic and are not shown.
 - **Shopping posts**: Wired's coupon and deal posts are neither news events nor clickbait by the spec's rules, so they can still rank.
+- **Extractive write-ups** read as a sequence of quoted sentences, not a written story, and the Who/Where name lists come from capitalisation, so they are sometimes noisy. Swapping in an LLM writer is the planned fix.
 - **Story labels** are the most frequent name in the headlines ("Jensen Huang", "Giants"), not a written title.

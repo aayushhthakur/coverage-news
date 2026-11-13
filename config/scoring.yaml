@@ -28,3 +28,8 @@ stories:
   threshold: 0.65          # event-centroid similarity that links two events into one story
   min_member_sim: 0.5      # members below this similarity to the story centroid are dropped (stops chaining)
   min_events: 6            # only groups of MORE than 5 events become a story
+
+writeup:
+  engine: extractive       # sentences quoted from feed summaries; an LLM writer can replace this later
+  card_words: [60, 90]     # card summary: stop once past 60 words, never go over 90
+  article_max_words: 1000  # detail write-up stops filling at about this length
